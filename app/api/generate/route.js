@@ -1,7 +1,7 @@
 import { parseRepoUrl } from "@/lib/validate";
 import { getRepoMetadata, getFileTree } from "@/lib/github";
 import { curateFiles } from "@/lib/curate";
-import { generateReport } from "@/lib/claude";
+import { generateReport } from "@/lib/gemini";
 import { parseReportResponse } from "@/lib/parseReport";
 
 export const maxDuration = 120;
@@ -60,12 +60,14 @@ export async function POST(request) {
       },
       curated.files
     );
-  } catch {
+  } catch (err) {
+    console.error("Gemini generation failed:", err);
     return Response.json(
       {
         status: "error",
         code: "GENERATION_TIMEOUT",
         message: "This repo is taking longer than expected. Try again, or try a smaller repo.",
+        debugMessage: err.message,
       },
       { status: 504 }
     );
