@@ -6,9 +6,16 @@ const SECTION_LABELS = [
   { key: "setupInstructions", label: "Setup Instructions" },
 ];
 
+function truncate(text, maxLength) {
+  if (!text || text.length <= maxLength) return text;
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
+}
+
 export default function ReportView({ repo, sections, onReset }) {
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 sm:px-0">
+    <div className="mx-auto w-full max-w-5xl animate-fade-in-up px-4 sm:px-0">
       <div className="mb-6 rounded-[2rem] border border-stone-300/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(82,64,40,0.12)] backdrop-blur-xl sm:p-7">
         <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -29,7 +36,7 @@ export default function ReportView({ repo, sections, onReset }) {
           </div>
           <button
             onClick={onReset}
-            className="rounded-2xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:border-stone-400 hover:bg-stone-50"
+            className="rounded-2xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-950/15"
           >
             Map another repo
           </button>
@@ -55,10 +62,15 @@ export default function ReportView({ repo, sections, onReset }) {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
                 {label}
               </p>
-              <p className="mt-2 text-sm leading-6 text-stone-700">{value}</p>
+              <p className="mt-2 text-sm leading-6 text-stone-700">
+                {truncate(value, 140)}
+              </p>
             </div>
           ))}
         </div>
+        <p className="mt-3 text-xs text-stone-400">
+          Quick-scan summary above — full detail in each section below.
+        </p>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-2">
           {SECTION_LABELS.map(({ key, label }) => (

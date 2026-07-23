@@ -65,7 +65,7 @@ export default function Home() {
     <main className="relative min-h-screen overflow-hidden px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
       <div className="absolute inset-0 -z-10 opacity-70 [background-image:linear-gradient(rgba(120,95,64,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(120,95,64,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-7xl items-center">
-        <div className="grid w-full gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
+        <div className="grid w-full animate-fade-in-up gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           <section className="flex flex-col justify-center">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-stone-300/70 bg-white/70 px-3 py-1 text-xs font-medium tracking-[0.18em] text-stone-600 shadow-sm backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />

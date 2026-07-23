@@ -23,8 +23,12 @@ export default function RepoInputForm({ onSubmit, disabled }) {
         </p>
       </div>
 
+      <label htmlFor="repoUrl" className="sr-only">
+        GitHub repository URL
+      </label>
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
+          id="repoUrl"
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -35,7 +39,7 @@ export default function RepoInputForm({ onSubmit, disabled }) {
         <button
           type="submit"
           disabled={disabled}
-          className="rounded-2xl bg-stone-950 px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_rgba(17,17,17,0.18)] transition hover:-translate-y-0.5 hover:bg-stone-800 disabled:translate-y-0 disabled:bg-stone-400"
+          className="rounded-2xl bg-stone-950 px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_rgba(17,17,17,0.18)] transition hover:-translate-y-0.5 hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-950/20 disabled:translate-y-0 disabled:bg-stone-400"
         >
           {disabled ? "Generating..." : "Generate"}
         </button>

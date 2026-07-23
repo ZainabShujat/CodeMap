@@ -14,6 +14,17 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "CodeMap",
   description: "Turn a GitHub repository into a readable project map.",
+  openGraph: {
+    title: "CodeMap",
+    description:
+      "Turn a GitHub repository into a clear project map — stack, structure, setup notes, and where to start.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "CodeMap",
+    description: "Turn a GitHub repository into a readable project map.",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -25,7 +36,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <div className="flex-1">{children}</div>
         <footer className="border-t border-stone-300/70 bg-white/55 px-4 py-5 text-center text-xs text-stone-500 backdrop-blur-sm sm:px-6">
-          Made with Claude as part of the AB Talks 60 Day Claude AI Challenge.
+          Built with Claude for the AB Talks 60-Day Claude AI Challenge — powered by Google Gemini.
         </footer>
       </body>
     </html>
