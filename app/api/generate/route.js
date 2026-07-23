@@ -103,7 +103,6 @@ export async function POST(request) {
         status: "error",
         code: "GENERATION_TIMEOUT",
         message: "This repo is taking longer than expected. Try again, or try a smaller repo.",
-        debugMessage: err.message,
       },
       { status: 504 }
     );
