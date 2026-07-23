@@ -1,11 +1,18 @@
 export default function LoadingState() {
   return (
-    <div className="mt-6 flex items-center gap-3 text-gray-500">
-      <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-teal-600" />
-      <span>
-        Reading the repository and writing your map (usually under 90
-        seconds)
-      </span>
+    <div className="mt-6 rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-4 text-stone-600 shadow-sm">
+      <div className="flex items-center gap-3">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-stone-300 border-t-stone-900" />
+        <div>
+          <p className="font-medium text-stone-900">Generating your map</p>
+          <p className="text-sm text-stone-600">
+            Reading the repository and assembling the overview.
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-stone-200">
+        <div className="h-full w-2/3 rounded-full bg-stone-900/80" />
+      </div>
     </div>
   );
 }

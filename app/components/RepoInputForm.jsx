@@ -12,26 +12,36 @@ export default function RepoInputForm({ onSubmit, disabled }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl">
-      <div className="flex flex-col sm:flex-row gap-3">
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="mb-5">
+        <h2 className="text-2xl font-semibold tracking-tight text-stone-950 sm:text-3xl">
+          Map a repository
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-stone-600">
+          Paste a public GitHub URL and get a readable breakdown of what lives
+          where.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           disabled={disabled}
           placeholder="https://github.com/owner/repo"
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:text-gray-400"
+          className="flex-1 rounded-2xl border border-stone-300 bg-white px-4 py-3.5 text-base text-stone-900 shadow-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-950/8 disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-400"
         />
         <button
           type="submit"
           disabled={disabled}
-          className="rounded-lg bg-gray-900 px-6 py-3 font-semibold text-white transition hover:bg-gray-700 disabled:bg-gray-400"
+          className="rounded-2xl bg-stone-950 px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_rgba(17,17,17,0.18)] transition hover:-translate-y-0.5 hover:bg-stone-800 disabled:translate-y-0 disabled:bg-stone-400"
         >
           {disabled ? "Generating..." : "Generate"}
         </button>
       </div>
-      <p className="mt-3 text-sm text-gray-400">
-        Works with public JavaScript &amp; Python repositories.
+      <p className="mt-3 text-sm text-stone-500">
+        Works best with public JavaScript and Python repositories.
       </p>
     </form>
   );
