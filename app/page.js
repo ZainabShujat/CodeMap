@@ -1,15 +1,118 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RepoInputForm from "./components/RepoInputForm";
 import LoadingState from "./components/LoadingState";
 import ErrorBanner from "./components/ErrorBanner";
 import ReportView from "./components/ReportView";
 
+const RECENT_ANALYSES_STORAGE_KEY = "codemap:recent-analyses";
+const MAX_RECENT_ANALYSES = 5;
+
+function normalizeRecentAnalyses(items) {
+  if (!Array.isArray(items)) return [];
+
+  return items
+    .filter(
+      (item) =>
+        item &&
+        item.repo &&
+        item.sections &&
+        typeof item.repo.owner === "string" &&
+        typeof item.repo.name === "string"
+    )
+    .map((item) => ({
+      repo: {
+        owner: item.repo.owner,
+        name: item.repo.name,
+        primaryLanguage:
+          typeof item.repo.primaryLanguage === "string"
+            ? item.repo.primaryLanguage
+            : "Unknown",
+        supportedLanguage: Boolean(item.repo.supportedLanguage),
+      },
+      sections: {
+        projectOverview: item.sections.projectOverview || "",
+        techStack: item.sections.techStack || "",
+        folderStructure: item.sections.folderStructure || "",
+        whereToStart: item.sections.whereToStart || "",
+        setupInstructions: item.sections.setupInstructions || "",
+      },
+      meta: item.meta && typeof item.meta === "object" ? item.meta : {},
+      savedAt:
+        typeof item.savedAt === "string"
+          ? item.savedAt
+          : new Date(0).toISOString(),
+    }))
+    .slice(0, MAX_RECENT_ANALYSES);
+}
+
 export default function Home() {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [errorMessage, setErrorMessage] = useState("");
   const [result, setResult] = useState(null);
+  const [recentAnalyses, setRecentAnalyses] = useState([]);
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(RECENT_ANALYSES_STORAGE_KEY);
+      if (!saved) return;
+
+      setRecentAnalyses(normalizeRecentAnalyses(JSON.parse(saved)));
+    } catch {
+      setRecentAnalyses([]);
+    }
+  }, []);
+
+  function saveRecentAnalyses(nextAnalyses) {
+    const normalized = normalizeRecentAnalyses(nextAnalyses);
+    setRecentAnalyses(normalized);
+
+    try {
+      sessionStorage.setItem(
+        RECENT_ANALYSES_STORAGE_KEY,
+        JSON.stringify(normalized)
+      );
+    } catch {
+      // Ignore storage failures (private browsing, quota) and keep the
+      // in-memory session history working for the current page load.
+    }
+  }
+
+  function rememberAnalysis(analysis) {
+    const nextAnalysis = {
+      repo: {
+        owner: analysis.repo.owner,
+        name: analysis.repo.name,
+        primaryLanguage: analysis.repo.primaryLanguage || "Unknown",
+        supportedLanguage: Boolean(analysis.repo.supportedLanguage),
+      },
+      sections: analysis.sections,
+      meta: analysis.meta || {},
+      savedAt: new Date().toISOString(),
+    };
+
+    const nextAnalyses = [
+      nextAnalysis,
+      ...recentAnalyses.filter(
+        (item) =>
+          item.repo.owner !== nextAnalysis.repo.owner ||
+          item.repo.name !== nextAnalysis.repo.name
+      ),
+    ].slice(0, MAX_RECENT_ANALYSES);
+
+    saveRecentAnalyses(nextAnalyses);
+  }
+
+  function handleOpenRecentAnalysis(analysis) {
+    setResult({
+      repo: analysis.repo,
+      sections: analysis.sections,
+      meta: analysis.meta,
+    });
+    setErrorMessage("");
+    setStatus("success");
+  }
 
   async function handleGenerate(repoUrl) {
     setStatus("loading");
@@ -33,6 +136,7 @@ export default function Home() {
       }
 
       setResult(data);
+      rememberAnalysis(data);
       setStatus("success");
     } catch {
       setErrorMessage(
@@ -101,6 +205,8 @@ export default function Home() {
               <RepoInputForm
                 onSubmit={handleGenerate}
                 disabled={status === "loading"}
+                recentAnalyses={recentAnalyses}
+                onOpenRecentAnalysis={handleOpenRecentAnalysis}
               />
               {status === "loading" && <LoadingState />}
             </div>

@@ -6,7 +6,43 @@ import { parseReportResponse } from "@/lib/parseReport";
 
 export const maxDuration = 120;
 
+// Best-effort in-memory rate limiter. Note: on Vercel's serverless platform,
+// each function instance has its own memory and instances can be recycled
+// at any time, so this is a soft deterrent against casual abuse, not a hard
+// guarantee. A durable limit would need an external store (e.g. Upstash
+// Redis), which is out of scope for this project's free-tier setup — but
+// this still meaningfully protects against a single script hammering the
+// endpoint within one warm instance.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 10;
+const requestLog = new Map();
+
+function isRateLimitedByIp(ip) {
+  const now = Date.now();
+  const timestamps = (requestLog.get(ip) || []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS
+  );
+  timestamps.push(now);
+  requestLog.set(ip, timestamps);
+  return timestamps.length > RATE_LIMIT_MAX_REQUESTS;
+}
+
 export async function POST(request) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "unknown";
+
+  if (isRateLimitedByIp(ip)) {
+    return Response.json(
+      {
+        status: "error",
+        code: "RATE_LIMITED",
+        message: "Too many requests right now — try again in a minute.",
+      },
+      { status: 429 }
+    );
+  }
+
   let body;
   try {
     body = await request.json();

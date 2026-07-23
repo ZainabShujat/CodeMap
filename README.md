@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CodeMap
+
+CodeMap turns a public GitHub repository into a concise onboarding report. Paste a repo URL, wait for the analysis to finish, and get a structured summary of the project overview, tech stack, folder structure, where to start reading, and setup instructions.
+
+The app is built with Next.js and focuses on giving developers a fast first-pass understanding of an unfamiliar codebase without having to read every file manually.
+
+## What it does
+
+- Accepts a public GitHub repository URL from the homepage.
+- Fetches repository metadata and the file tree from GitHub.
+- Curates the most relevant files for analysis.
+- Sends the curated context to the AI generation pipeline.
+- Renders the resulting report in a clean, readable interface.
+
+## Tech Stack
+
+- Next.js 16 App Router
+- React 19
+- Tailwind CSS 4
+- GitHub REST API
+- Google Gemini for report generation
+- Anthropic SDK support in the codebase for related synthesis helpers
+- Zod for validation
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18 or newer
+- A GitHub personal access token for higher API limits
+- A Gemini API key
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Configure environment variables
+
+Create a local environment file named `.env.local` in the project root and add:
+
+```bash
+GITHUB_TOKEN=your_github_token
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+If you work on the Anthropic-based helper paths in `lib/claude.js`, also set `ANTHROPIC_API_KEY`.
+
+### Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` starts the development server.
+- `npm run build` creates a production build.
+- `npm run start` runs the production build locally.
+- `npm run lint` checks the codebase with ESLint.
 
-## Learn More
+## How the request flow works
 
-To learn more about Next.js, take a look at the following resources:
+1. The homepage accepts a GitHub repository URL.
+2. The app validates and normalizes the URL.
+3. The server route fetches repo metadata and the file tree from GitHub.
+4. Relevant files are curated into a smaller context window.
+5. The AI model generates a JSON report.
+6. The UI renders the report as a readable repository map.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `app/` contains the Next.js routes, pages, and API handlers.
+- `components/` contains the UI pieces for the input form, loading state, errors, and report display.
+- `lib/` contains GitHub access, curation, parsing, validation, and AI helper logic.
+- `docs/` contains architecture, API, schema, and project notes.
 
-## Deploy on Vercel
+## Limitations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The app is designed for public repositories.
+- GitHub API limits can affect request volume if no token is configured.
+- Primary support is for JavaScript, TypeScript, and Python repositories.
+- Large repositories may take longer to process or may hit the generation timeout.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+This project is intentionally small and opinionated. If you extend it, keep the UI simple, keep the API surface narrow, and preserve the repository-map workflow as the core experience.
