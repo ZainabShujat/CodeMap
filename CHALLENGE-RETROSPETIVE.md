@@ -5,7 +5,7 @@ A record of the actual 10-day journey, not a highlight reel. Written on Day 10 o
 ---
 
 ## Timeline: Day 1 → Day 10
-
+ 
 **Day 1 — Requirements.** Started with three real candidate products (a PR reviewer, an onboarding assistant, a tech-debt triage tool) before landing on CodeMap, sharpened around a specific persona — not "a new hire" in general, but "the Curious Contributor" deciding whether to invest in an unfamiliar repo. That specificity is what later made the "good first issue" idea (deferred to the cut list) and the eventual UI copy click into place.
 
 **Day 2 — Design.** Locked the architecture: Next.js, no database, no auth, a single synthesis call rather than live agentic exploration (a deliberate time-budget trade-off, explicitly documented as a future upgrade, not a limitation hidden from view). Chose Claude as the AI provider. Discovered mid-design that Vercel's free-tier function timeout needed Fluid Compute to support a ~90-second generation window — caught before it became a Day 5 surprise.
