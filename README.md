@@ -1,90 +1,110 @@
 # CodeMap
 
-CodeMap turns a public GitHub repository into a concise onboarding report. Paste a repo URL, wait for the analysis to finish, and get a structured summary of the project overview, tech stack, folder structure, where to start reading, and setup instructions.
+Turn a public GitHub repository into a clear, readable onboarding report — built for open-source contributors deciding whether to dive into an unfamiliar codebase.
 
-The app is built with Next.js and focuses on giving developers a fast first-pass understanding of an unfamiliar codebase without having to read every file manually.
+Paste a repo URL, wait under about 90 seconds, and get back a structured breakdown: what the project does, its tech stack, how it's organized, where to start reading the code, and how to set it up locally.
+
+**Live demo:** https://code-map-gamma.vercel.app
+
+---
 
 ## What it does
 
-- Accepts a public GitHub repository URL from the homepage.
-- Fetches repository metadata and the file tree from GitHub.
-- Curates the most relevant files for analysis.
-- Sends the curated context to the AI generation pipeline.
-- Renders the resulting report in a clean, readable interface.
+- Accepts a public GitHub repository URL.
+- Fetches the repo's metadata and file tree from GitHub.
+- Curates the most relevant files (README, manifest, entry points, and a token-budgeted sample of other source files) within a fixed context budget.
+- Sends the curated context to Google Gemini for analysis.
+- Renders the result as a five-section report: Project Overview, Tech Stack, Folder Structure Explained, Where to Start Reading, and Setup Instructions.
+- Remembers repos analyzed in the current browser session, so revisiting one is instant, with no re-generation cost.
 
-## Tech Stack
+## Tech stack
 
-- Next.js 16 App Router
+- Next.js 16 (App Router), plain JavaScript
 - React 19
 - Tailwind CSS 4
-- GitHub REST API
-- Google Gemini for report generation
-- Anthropic SDK support in the codebase for related synthesis helpers
-- Zod for validation
+- GitHub REST API (via native `fetch`)
+- Google Gemini (`gemini-2.5-flash`) for report generation
+- Zod for lightweight validation
+- Deployed on Vercel (Fluid Compute enabled, to support the ~90 second generation window)
 
-## Getting Started
+No database and no authentication are used — every request is stateless end to end. Session history lives only in the browser (`sessionStorage`), never on a server.
+
+## Getting started
 
 ### Prerequisites
 
 - Node.js 18 or newer
-- A GitHub personal access token for higher API limits
-- A Gemini API key
+- A GitHub personal access token (raises API rate limits from 60/hr to 5,000/hr — [create one here](https://github.com/settings/tokens?type=beta), scoped to "Public Repositories (read-only)")
+- A free Google Gemini API key ([create one here](https://aistudio.google.com/apikey) — no card required)
 
-### Install dependencies
+### Install
 
-```bash
+```
 npm install
 ```
 
 ### Configure environment variables
 
-Create a local environment file named `.env.local` in the project root and add:
+Create a `.env.local` file in the project root:
 
-```bash
+```
 GITHUB_TOKEN=your_github_token
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-If you work on the Anthropic-based helper paths in `lib/claude.js`, also set `ANTHROPIC_API_KEY`.
+### Run locally
 
-### Run the app
-
-```bash
+```
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open http://localhost:3000.
 
-## Available Scripts
+## Available scripts
 
-- `npm run dev` starts the development server.
-- `npm run build` creates a production build.
-- `npm run start` runs the production build locally.
-- `npm run lint` checks the codebase with ESLint.
+- `npm run dev` — start the development server
+- `npm run build` — create a production build
+- `npm run start` — run the production build locally
+- `npm run lint` — check the codebase with ESLint
 
-## How the request flow works
+## How a request flows
 
-1. The homepage accepts a GitHub repository URL.
-2. The app validates and normalizes the URL.
-3. The server route fetches repo metadata and the file tree from GitHub.
-4. Relevant files are curated into a smaller context window.
-5. The AI model generates a JSON report.
-6. The UI renders the report as a readable repository map.
+1. The homepage accepts a GitHub repository URL and validates its format client-side for instant feedback.
+2. `POST /api/generate` re-validates the URL, then fetches repo metadata and its file tree from GitHub.
+3. Files are curated within a fixed character budget — README, manifest, and entry-point files are always included; remaining budget is filled smallest-file-first.
+4. The curated bundle is sent to Gemini in a single request, instructed to stay grounded in the provided files and return structured JSON.
+5. The response is parsed into five fixed sections and rendered in the UI.
 
-## Project Structure
+## Project structure
 
-- `app/` contains the Next.js routes, pages, and API handlers.
-- `components/` contains the UI pieces for the input form, loading state, errors, and report display.
-- `lib/` contains GitHub access, curation, parsing, validation, and AI helper logic.
-- `docs/` contains architecture, API, schema, and project notes.
+```
+app/
+  page.js                   — main UI; handles the input/loading/report/error states
+  layout.js                 — root layout and page metadata
+  components/                — RepoInputForm, LoadingState, ErrorBanner, ReportView
+  api/
+    generate/route.js        — the core POST endpoint
+    health/route.js          — uptime check
+lib/
+  validate.js                 — GitHub URL validation/normalization
+  github.js                   — GitHub REST API access (metadata, file tree, file contents)
+  curate.js                   — file curation and token-budget logic
+  gemini.js                   — Gemini API wrapper and synthesis prompt
+  parseReport.js               — parses Gemini's response into report sections
+docs/                          — architecture, schema, API design, and sprint planning notes
+```
 
 ## Limitations
 
-- The app is designed for public repositories.
-- GitHub API limits can affect request volume if no token is configured.
-- Primary support is for JavaScript, TypeScript, and Python repositories.
-- Large repositories may take longer to process or may hit the generation timeout.
+- Public repositories only — no private repo or authentication support.
+- Full, tested language support is JavaScript and Python; other languages may still produce a result but aren't guaranteed to be as reliable.
+- Very large repositories may take longer to process, up to the generation timeout.
+- Session history is stored in the browser only and clears when the tab/session ends — it isn't a persistent account feature.
 
-## Contributing
+## License
 
-This project is intentionally small and opinionated. If you extend it, keep the UI simple, keep the API surface narrow, and preserve the repository-map workflow as the core experience.
+MIT
+
+---
+
+Built as part of the AB Talks 60-Day Claude AI Challenge.

@@ -12,6 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://code-map-gamma.vercel.app"),
   title: "CodeMap",
   description: "Turn a GitHub repository into a readable project map.",
   openGraph: {
@@ -21,7 +22,7 @@ export const metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "CodeMap",
     description: "Turn a GitHub repository into a readable project map.",
   },
@@ -36,7 +37,8 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <div className="flex-1">{children}</div>
         <footer className="border-t border-stone-300/70 bg-white/55 px-4 py-5 text-center text-xs text-stone-500 backdrop-blur-sm sm:px-6">
-          Built with Claude for the AB Talks 60-Day Claude AI Challenge — powered by Google Gemini.
+          Built with Claude for the AB Talks 60-Day Claude AI Challenge —
+          powered by Google Gemini.
         </footer>
       </body>
     </html>
