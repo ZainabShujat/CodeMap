@@ -1,5 +1,10 @@
 # CodeMap
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/demo-live-2ea44f)](https://code-map-gamma.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
+[![Powered by Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4)](https://ai.google.dev)
+
 Turn a public GitHub repository into a clear, readable onboarding report — built for open-source contributors deciding whether to dive into an unfamiliar codebase.
 
 Paste a repo URL, wait under about 90 seconds, and get back a structured breakdown: what the project does, its tech stack, how it's organized, where to start reading the code, and how to set it up locally.
